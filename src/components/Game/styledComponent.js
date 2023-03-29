@@ -38,3 +38,25 @@ export const RulesPopup = styled.div`
 export const CloseButton = styled.button`
   align-self: flex-end;
 `
+export const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 250px;
+  @media screen and (min-width: 768px) {
+    max-width: 500px;
+  }
+`
+export const ChoiceButton = styled.button`
+  width: 120px;
+  background-color: transparent;
+  border: 0px;
+  outline: none;
+  cursor: pointer;
+  @media screen and (min-width: 768px) {
+    width: 200px;
+  }
+`
+export const ChoiceImage = styled.img`
+  width: 100%;
+`

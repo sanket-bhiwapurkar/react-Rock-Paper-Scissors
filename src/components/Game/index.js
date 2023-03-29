@@ -2,20 +2,39 @@ import {Component} from 'react'
 import Popup from 'reactjs-popup'
 import 'reactjs-popup/dist/index.css'
 import {RiCloseLine} from 'react-icons/ri'
-import ChoicesContext from '../../context/ChoicesContext'
 
 import {
   BgContainer,
-  ChoiceList,
   RulesContainer,
   RulesButton,
   RulesPopup,
+  ButtonContainer,
   CloseButton,
+  ChoiceButton,
+  ChoiceImage,
 } from './styledComponent'
 
 import ScoreBoard from '../ScoreBoard'
-import GameChoiceItem from '../GameChoiceItem'
+// import GameChoiceItem from '../GameChoiceItem'
 import GameResultsView from '../GameResultsView'
+
+const choicesList = [
+  {
+    id: 'ROCK',
+    imageUrl:
+      'https://assets.ccbp.in/frontend/react-js/rock-paper-scissor/rock-image.png',
+  },
+  {
+    id: 'SCISSORS',
+    imageUrl:
+      'https://assets.ccbp.in/frontend/react-js/rock-paper-scissor/scissor-image.png',
+  },
+  {
+    id: 'PAPER',
+    imageUrl:
+      'https://assets.ccbp.in/frontend/react-js/rock-paper-scissor/paper-image.png',
+  },
+]
 
 const choiceValueList = {
   ROCK: 2,
@@ -27,26 +46,13 @@ class Game extends Component {
   state = {
     score: 0,
     isPlaying: true,
-    choices: ['', ''],
-    result: '',
+    choices: ['ROCK', 'SCISSORS'],
+    result: 'YOU WON',
   }
 
-  getUserChoice = (id, choicesList) => {
-    const randomChoice = Math.floor(Math.random() * choicesList.length)
-    let opponentChoiceId
-    switch (randomChoice) {
-      case choiceValueList.ROCK:
-        opponentChoiceId = 'ROCK'
-        break
-      case choiceValueList.SCISSORS:
-        opponentChoiceId = 'SCISSORS'
-        break
-      case choiceValueList.PAPER:
-        opponentChoiceId = 'PAPER'
-        break
-      default:
-        break
-    }
+  getUserChoice = id => {
+    const opponentChoiceId =
+      choicesList[Math.floor(Math.random() * choicesList.length)].id
     this.setState(
       {
         isPlaying: false,
@@ -84,61 +90,75 @@ class Game extends Component {
   replay = () => {
     this.setState({
       isPlaying: true,
-      choices: ['', ''],
-      result: '',
+      choices: ['ROCK', 'SCISSORS'],
+      result: 'YOU WON',
     })
   }
 
   render() {
     const {score, isPlaying, choices, result} = this.state
     return (
-      <ChoicesContext.Consumer>
-        {value => {
-          const {choicesList} = value
-          return (
-            <BgContainer>
-              <ScoreBoard score={score} />
-              {isPlaying ? (
-                <ChoiceList>
-                  {choicesList.map(eachChoice => (
-                    <GameChoiceItem
-                      choiceDetails={eachChoice}
-                      key={eachChoice.id}
-                      getUserChoice={this.getUserChoice}
-                    />
-                  ))}
-                </ChoiceList>
-              ) : (
-                <GameResultsView
-                  userChoice={choices[0]}
-                  opponentChoice={choices[1]}
-                  result={result}
-                  replay={this.replay}
+      <BgContainer>
+        <ScoreBoard score={score} />
+        {isPlaying ? (
+          <ButtonContainer>
+            <ChoiceButton
+              data-testid="rockButton"
+              onClick={() => this.getUserChoice(choicesList[0].id)}
+            >
+              <ChoiceImage
+                src={choicesList[0].imageUrl}
+                alt={choicesList[0].id}
+              />
+            </ChoiceButton>
+            <ChoiceButton
+              data-testid="scissorsButton"
+              onClick={() => this.getUserChoice(choicesList[1].id)}
+            >
+              <ChoiceImage
+                src={choicesList[1].imageUrl}
+                alt={choicesList[1].id}
+              />
+            </ChoiceButton>
+            <ChoiceButton
+              data-testid="paperButton"
+              onClick={() => this.getUserChoice(choicesList[2].id)}
+            >
+              <ChoiceImage
+                src={choicesList[2].imageUrl}
+                alt={choicesList[2].id}
+              />
+            </ChoiceButton>
+          </ButtonContainer>
+        ) : (
+          <GameResultsView
+            userChoice={choices[0]}
+            opponentChoice={choices[1]}
+            choicesList={choicesList}
+            result={result}
+            replay={this.replay}
+          />
+        )}
+        <RulesContainer>
+          <Popup
+            modal
+            trigger={<RulesButton type="button">RULES</RulesButton>}
+            position="top right"
+          >
+            {close => (
+              <RulesPopup>
+                <CloseButton type="button" onClick={() => close()}>
+                  <RiCloseLine />
+                </CloseButton>
+                <img
+                  src="https://assets.ccbp.in/frontend/react-js/rock-paper-scissor/rules-image.png"
+                  alt="rules"
                 />
-              )}
-              <RulesContainer>
-                <Popup
-                  modal
-                  trigger={<RulesButton type="button">RULES</RulesButton>}
-                  position="top right"
-                >
-                  {close => (
-                    <RulesPopup>
-                      <CloseButton type="button" onClick={() => close()}>
-                        <RiCloseLine />
-                      </CloseButton>
-                      <img
-                        src="https://assets.ccbp.in/frontend/react-js/rock-paper-scissor/rules-image.png"
-                        alt="rules"
-                      />
-                    </RulesPopup>
-                  )}
-                </Popup>
-              </RulesContainer>
-            </BgContainer>
-          )
-        }}
-      </ChoicesContext.Consumer>
+              </RulesPopup>
+            )}
+          </Popup>
+        </RulesContainer>
+      </BgContainer>
     )
   }
 }
